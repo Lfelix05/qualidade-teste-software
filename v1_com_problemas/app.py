@@ -1,58 +1,43 @@
-import os
+from flask import Flask, request
+import sqlite3
 
-class user:
-    def __init__(self, name, email, password):
-        self.name = name
-        self.email = email
-        self.password = password
+app = Flask(__name__)
 
-    users = []
+conn = sqlite3.connect('clientes.db', check_same_thread=False)
+conn.execute('CREATE TABLE IF NOT EXISTS clientes (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, email TEXT, idade TEXT)')
+conn.commit()
 
-    def add_user(self):
-        self.users.append(self)
 
-    @classmethod
-    def get_users(cls):
-        return cls.users
+@app.route('/')
+def index():
+    linhas = conn.execute('SELECT nome, email, idade FROM clientes').fetchall()
 
-    @classmethod
-    def login(cls, email, password):
-        for user in cls.users:
-            if user.email == email and user.password == password:
-                return True
-        return False
+    html = '<h1>Cadastro de Clientes</h1>'
+    html += '<form method="POST" action="/cadastrar">'
+    html += 'Nome: <input name="nome"><br>'
+    html += 'Email: <input name="email"><br>'
+    html += 'Idade: <input name="idade"><br>'
+    html += '<input type="submit" value="Cadastrar">'
+    html += '</form>'
+    html += '<h2>Clientes cadastrados</h2><ul>'
+    for linha in linhas:
+        html += f'<li>{linha[0]} - {linha[1]} - {linha[2]}</li>'
+    html += '</ul>'
+    return html
 
-def main():
-    print("Bem vindo ao sistema de cadastro de usuários!")
-    print("Digite 1 para cadastrar um novo usuário.")
-    print("Digite 2 para fazer login.")
-    print("Digite 3 para sair.")
-    input_option = input(" ")
-    match input_option:
-        case "1":
-            name = input("Digite seu nome: ")
-            email = input("Digite seu email: ")
-            password = input("Digite sua senha: ")
-            new_user = user(name, email, password)
-            new_user.add_user()
-            os.system('cls' if os.name == 'nt' else 'clear')
-            print("Usuário cadastrado com sucesso!")
-            main()
-        case "2":
-            email = input("Digite seu email: ")
-            password = input("Digite sua senha: ")
-            if user.login(email, password):
-                os.system('cls' if os.name == 'nt' else 'clear')
-                print(f"Olá {user.get_users()[0].name}! Login realizado com sucesso!")
-                exit()
-            else:
-                os.system('cls' if os.name == 'nt' else 'clear')
-                print("Email ou senha incorretos.")
-            main()
-        case "3":
-            os.system('cls' if os.name == 'nt' else 'clear')
-            print("Saindo do sistema...")
-            exit()
 
-if __name__ == "__main__":
-    main()    
+@app.route('/cadastrar', methods=['POST'])
+def cadastrar():
+    n = request.form['nome']
+    e = request.form['email']
+    i = request.form['idade']
+
+    query = "INSERT INTO clientes (nome, email, idade) VALUES ('" + n + "', '" + e + "', '" + i + "')"
+    conn.execute(query)
+    conn.commit()
+
+    return f'<p>Cliente {n} cadastrado com sucesso!</p><a href="/">Voltar</a>'
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
