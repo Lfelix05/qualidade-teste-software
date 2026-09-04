@@ -67,21 +67,6 @@ python app.py
 pytest tests/ -v
 ```
 
-## Roteiro sugerido para terminar o trabalho
-
-1. Rode a v1, teste o formulário com dados inválidos (nome vazio, e-mail
-   sem `@`, idade com letras) e tire prints mostrando que o sistema aceita
-   ou quebra.
-2. Complete `docs/problemas-identificados.md` com suas observações.
-3. Rode a v2 com os mesmos dados inválidos e tire prints mostrando as
-   mensagens de erro tratadas.
-4. Complete `docs/melhorias-propostas.md` e `docs/iso25010.md`.
-5. Rode `pytest tests/ -v` e tire print do resultado (todos os testes
-   passando) para anexar como evidência dos "casos de teste documentados".
-6. Junte tudo (descrição do sistema, problemas, melhorias, prints,
-   relação com a ISO 25010, casos de teste) em um único PDF para entregar
-   no Moodle.
-
 ## Sobre a escolha técnica
 
 Optou-se por uma aplicação web simples com back-end em Flask (em vez de um
